@@ -60,6 +60,7 @@
           <table class="table container">
             <thead>
             <tr>
+              <th></th>
               <th>Солнечно</th>
               <th>Облачно</th>
               <th>Пасмурно</th>
@@ -67,9 +68,16 @@
             </thead>
             <tbody>
             <tr>
+              <th>Эмпирическая</th>
               <td>{{ format(durations[0] * 100 / durations.reduce((a, b) => a + b, 0)) }}%</td>
               <td>{{ format(durations[1] * 100 / durations.reduce((a, b) => a + b, 0)) }}%</td>
               <td>{{ format(durations[2] * 100 / durations.reduce((a, b) => a + b, 0)) }}%</td>
+            </tr>
+            <tr>
+              <th>Теоритичекая</th>
+              <td>{{ format(theoreticalProbability[0] * 100)}}%</td>
+              <td>{{ format(theoreticalProbability[1] * 100)}}%</td>
+              <td>{{ format(theoreticalProbability[2] * 100)}}%</td>
             </tr>
             </tbody>
           </table>
@@ -92,7 +100,7 @@
 
 <script lang="ts">
 import Vue from "vue"
-import {getNextState} from "./domain/Markov";
+import {getNextState, getTheoreticalProbability} from "./domain/Markov";
 import {processe} from "./domain/StatisticalProcessing";
 
 export default Vue.extend({
@@ -108,7 +116,7 @@ export default Vue.extend({
       daysPerSecond: 0.5,
       dateTime: new Date(Date.now()),
       names: ["Солнечно", "Облачно", "Пасмурно"],
-      fg: 0,
+      theoreticalProbability: getTheoreticalProbability([])
     }
   },
 
@@ -127,8 +135,6 @@ export default Vue.extend({
     },
 
     doStep() {
-      console.log(this.fg++)
-      console.log(this.dur)
       this.dateTime.setTime(this.dateTime.getTime() + this.dur * 1000 * 3600 * 24)
       this.logs.push(`${this.names[this.state]} сменилось на ${this.names[this.nextState]} в ${this.dateTime.toLocaleString("ru-RU")}`)
 
